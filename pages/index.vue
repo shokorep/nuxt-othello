@@ -1,72 +1,72 @@
 <template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        othello
-      </h1>
-      <h2 class="subtitle">
-        othello project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
+  <div class="board">
+    <template v-for="y in board.length">
+      <div v-for="x in board[y - 1].length" :key="`${x} - ${y}`" @click="onClickCell(x - 1, y - 1)" class="cell">
+        <div
+          v-if="board[y - 1][x - 1]"
+          :class="[ 'stone' , board[y - 1][x - 1] === 1 ? 'black' : 'white']"
+        />
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-
 export default {
-  components: {
-    Logo
+  data () {
+    return {
+      board: [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, -1, 0, 0, 0],
+        [0, 0, 0, -1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0]
+      ],
+      turn: 1
+    }
+  },
+  methods: {
+    onClickCell (x, y) {
+      this.board = JSON.parse(JSON.stringify(this.board))
+      const { board, turn } = this
+      // console.log('===========')
+      // console.log(x, y)
+      // console.log(board[x - 1][y])
+      // console.log(turn)
+      if (board[x][y] === 0 && board[x - 1][y] !== turn && board[x - 1][y] !== 0) {
+        board[y][x] = turn
+      }
+    }
   }
 }
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+<style scoped>
+.board {
+  width: 480px;
+  height: 480px;
+  background: #090;
+  margin:20px auto;
 }
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+.cell{
+  width: 12.5%;
+  height: 12.5%;
+  border:1px solid #222;
+  float: left;
 }
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+.stone{
+  width:80%;
+  height:80%;
+  border-radius: 50%;
+  margin: 10%
 }
-
-.links {
-  padding-top: 15px;
+.black{
+  background: #222
+}
+.white{
+  background:white
 }
 </style>
