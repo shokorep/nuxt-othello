@@ -33,21 +33,24 @@ export default {
       this.board = JSON.parse(JSON.stringify(this.board))
       const { board, turn } = this
       console.log('===========')
-      console.log(x, y)
-      console.log(board[x][y])
-      console.log(board[x - 1][y])
-      console.log(turn)
+      console.log('x, y' + x, y)
+      console.log('board[y][x]' + board[y][x])
+      console.log('board[y][x - 1]' + board[y][x - 1])
+      console.log('turn' + turn)
+      // const result = this.checkExistMyStoneOnLeft(x - 1, y) // これをここに置くとなぜかひっくり返せなくなる問題を確認する
       if (board[y][x] === 0 && board[y][x - 1] !== turn && board[y][x - 1] !== 0) {
-        board[y][x] = turn
+        console.log('turn' + turn)
+        console.log('board[y][x]' + board[y][x])
+        board[y][x] = turn // なぜかこれが効かない、、、
+        console.log('turn' + turn)
+        console.log('board[y][x]' + board[y][x])
         console.log('白マスかつ左隣が相手色なので置けたよ')
         console.log('ひっくりかえせるかチェックをします')
-        for (let i = x; i--;) {
-          if (i < 2) {
-            break
-          } else if (board[y][x - 2] === turn) {
-            // 間を全部turnにする
-            board[y][x - 1] = turn
-          }
+        const result = this.checkExistMyStoneOnLeft(x - 1, y)
+        if (result) {
+          this.turnStone(x - 1, y)
+        } else {
+          console.log('ひっくり返せないよ！')
         }
         if (turn === 1) {
           this.turn = -1
@@ -76,20 +79,30 @@ export default {
         board[y][x] = turn
         console.log('白マスかつ左斜め上が相手色なので置けたよ')
       }
-
-      // if (board[x][y] === 0 && board[x - 1][y] !== turn && board[x - 1][y] !== 0) {
-      //   board[y][x] = turn
-      //   console.log('白マスかつ左隣が相手色なので置けたよ')
-      // } else if (board[x][y] === 0 && board[x + 1][y] !== turn && board[x + 1][y] !== 0) {
-      //   board[y][x] = turn
-      //   console.log('白マスかつ右隣が相手色なので置けたよ')
-      // } else if (board[x][y] === 0 && board[x][y - 1] !== turn && board[x][y - 1] !== 0) {
-      //   board[y][x] = turn
-      //   console.log('白マスかつ上が相手色なので置けたよ')
-      // } else if (board[x][y] === 0 && board[x][y + 1] !== turn && board[x][y + 1] !== 0) {
-      //   board[y][x] = turn
-      //   console.log('白マスかつ下が相手色なので置けたよ')
-      // }
+    },
+    checkExistMyStoneOnLeft (x, y) {
+      this.board = JSON.parse(JSON.stringify(this.board))
+      const { board, turn } = this
+      if (x < 1) {
+        console.log('xが1なのでfalseを返します')
+        return false
+      } else if (board[y][x - 1] === turn) {
+        console.log('board[y][x - 1]が自陣なのでtrueを返します。' + 'x=' + x + 'y=' + y)
+        return true
+      } else {
+        console.log(x - 1, y + 'は敵陣なので' + x - 2, y + 'を調べます。')
+        this.checkExistMyStoneOnLeft(x - 1, y)
+      }
+    },
+    turnStone (x, y) {
+      this.board = JSON.parse(JSON.stringify(this.board))
+      const { board, turn } = this
+      if (board[y][x] !== turn) {
+        board[y][x] = turn
+        this.turnStone(x - 1, y)
+      } else if (board[y][x] === turn) {
+        console.log('ひっくり返し終了')
+      }
     }
   }
 }
