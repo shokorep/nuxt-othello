@@ -30,134 +30,41 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0]
       ],
-      turn: 1
+      turn: 1,
+      direction: [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
     }
   },
   methods: {
     onClickCell (x, y) {
       this.board = JSON.parse(JSON.stringify(this.board))
-      const { board, turn } = this
-      console.log('===========')
-      console.log('x, y' + x, y)
-      console.log('board[y][x]' + board[y][x])
-      console.log('board[y][x - 1]' + board[y][x - 1])
-      console.log('turn' + turn)
-      const result = this.checkExistMyStoneOnLeft(x - 1, y)
-      if (
-        board[y][x] === 0 &&
-        board[y][x - 1] !== turn &&
-        board[y][x - 1] !== 0 &&
-        result
-      ) {
-        console.log('turn' + turn)
-        console.log('board[y][x]' + board[y][x])
-        board[y][x] = turn
-        console.log('turn' + turn)
-        console.log('board[y][x]' + board[y][x])
-        console.log('白マスかつ左隣が相手色なので置けたよ')
-        if (result) {
-          this.turnStone(x - 1, y)
-        } else {
-          console.log('ひっくり返せないよ！')
+      const { board, turn, direction } = this
+      let turnOverCandidate = []
+      const turnOverTerget = []
+      const oppositeTurn = turn * (-1)
+      direction.forEach(function (dir) {
+        for (let i = 1; i <= 8; i++) {
+          const trgx = (dir[1] * i) + x
+          const trgy = (dir[0] * i) + y
+          if (board[trgy] && board[trgy][trgx] && board[trgy][trgx] === oppositeTurn) {
+            turnOverCandidate.push([trgy, trgx])
+          } else if (board[trgy] && board[trgy][trgx] && turnOverCandidate.length >= 1 && board[trgy][trgx] === turn) {
+            turnOverTerget.push(turnOverCandidate)
+            turnOverCandidate = []
+            break
+          } else if (board[trgy] && (board[trgy][trgx] === 0 || board[trgy][trgx] === turn)) {
+            turnOverCandidate = []
+            break
+          }
         }
-        if (turn === 1) {
-          this.turn = -1
-        } else {
-          this.turn = 1
-        }
-      } else if (
-        board[y][x] === 0 &&
-        board[y][x + 1] !== turn &&
-        board[x + 1][y] !== 0
-      ) {
+      })
+      if (turnOverTerget.length >= 1) {
         board[y][x] = turn
-        console.log('白マスかつ右隣が相手色なので置けたよ')
-      } else if (
-        board[y][x] === 0 &&
-        board[y - 1][x] !== turn &&
-        board[y - 1][x] !== 0
-      ) {
-        board[y][x] = turn
-        console.log('白マスかつ上が相手色なので置けたよ')
-      } else if (
-        board[y][x] === 0 &&
-        board[y + 1][x] !== turn &&
-        board[y + 1][x] !== 0
-      ) {
-        board[y][x] = turn
-        console.log('白マスかつ下が相手色なので置けたよ')
-      } else if (
-        board[y][x] === 0 &&
-        board[y + 1][x + 1] !== turn &&
-        board[y + 1][x + 1] !== 0
-      ) {
-        board[y][x] = turn
-        console.log('白マスかつ右斜め下が相手色なので置けたよ')
-      } else if (
-        board[y][x] === 0 &&
-        board[y + 1][x - 1] !== turn &&
-        board[y + 1][x - 1] !== 0
-      ) {
-        board[y][x] = turn
-        console.log('白マスかつ左斜め下が相手色なので置けたよ')
-      } else if (
-        board[y][x] === 0 &&
-        board[y - 1][x + 1] !== turn &&
-        board[y - 1][x + 1] !== 0
-      ) {
-        board[y][x] = turn
-        console.log('白マスかつ右斜め上が相手色なので置けたよ')
-      } else if (
-        board[y][x] === 0 &&
-        board[y - 1][x - 1] !== turn &&
-        board[y - 1][x - 1] !== 0
-      ) {
-        board[y][x] = turn
-        console.log('白マスかつ左斜め上が相手色なので置けたよ')
-      }
-      // }
-    },
-    checkExistMyStoneOnLeft (x, y) {
-      const { board, turn } = this
-      if (x < 8 && x > 1 && y < 8 && y > 1) {
-        if (x < 1) {
-          console.log('xが' + x + 'なのでfalseを返します')
-          console.log('yが' + y + 'なのでfalseを返します')
-          return false
-        } else if (board[y][x - 1] === turn) {
-          console.log(
-            'board[y][x - 1]が自陣なのでtrueを返します。' + 'x=' + x + 'y=' + y
-          )
-          return true
-        } else {
-          console.log(x - 1, y + 'は敵陣なので' + x - 2, y + 'を調べます。')
-          return this.checkExistMyStoneOnLeft(x - 1, y)
-        }
-      }
-    },
-    checkExistMyStoneOnRight (x, y) {
-      const { board, turn } = this
-      if (x < 1) {
-        console.log('xが1なのでfalseを返します')
-        return false
-      } else if (board[y][x - 1] === turn) {
-        console.log(
-          'board[y][x - 1]が自陣なのでtrueを返します。' + 'x=' + x + 'y=' + y
-        )
-        return true
-      } else {
-        console.log(x - 1, y + 'は敵陣なので' + x - 2, y + 'を調べます。')
-        return this.checkExistMyStoneOnLeft(x - 1, y)
-      }
-    },
-    turnStone (x, y) {
-      this.board = JSON.parse(JSON.stringify(this.board))
-      const { board, turn } = this
-      if (board[y][x] !== turn) {
-        board[y][x] = turn
-        this.turnStone(x - 1, y)
-      } else if (board[y][x] === turn) {
-        console.log('ひっくり返し終了')
+        turnOverTerget.forEach(function (c) {
+          c.forEach(function (t) {
+            board[t[0]][t[1]] = turn
+          })
+        })
+        this.turn = oppositeTurn
       }
     }
   }
