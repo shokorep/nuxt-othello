@@ -15,7 +15,7 @@ var bodyParser = require('body-parser');
 // app.use(bodyParser.json());
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true }))
-
+                                                                            
 app.use('/auth', require('./models/auth'));
 // app.get('/board', board);
 // app.put('/board', board);
