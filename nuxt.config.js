@@ -61,5 +61,9 @@ export default {
   },
   serverMiddleware: [
     { path: '/api', handler: '~/api/index.js' }
+    // '~/api/index.js'
+  ],
+  watch: [
+    '~/api'
   ]
 }

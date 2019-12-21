@@ -17,26 +17,45 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data () {
     return {
-      board: [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, -1, 0, 0, 0],
-        [0, 0, 0, -1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ],
       turn: 1,
       direction: [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
+      // board: []
     }
   },
+  async asyncData ({ app, $axios }) {
+    console.log({ app })
+    const auth = await $axios.$get('http://localhost:3000/api/auth')
+    const board = await $axios.$get('http://localhost:3000/api/board')
+    console.log(auth, board)
+    return { auth, board }
+  },
+  // async mounted () {
+  //   this.board = await this.initBoard()
+  // },
+  conputed: {
+    ...mapState(['count'])
+  },
   methods: {
-    onClickCell (x, y) {
+    // async initBoard () {
+    //   await this.$axios.$get(`http://localhost:3000/api/board`)
+    //     .then((res) => {
+    //       console.log('res.board:', res.board)
+    //       return res.board
+    //     }).catch(err => alert(err))
+    // },
+    async onClickCell (x, y) {
       this.board = JSON.parse(JSON.stringify(this.board))
+      const modify = { name: 'hoge' }
+      // console.log(this.auth, 'その２')
+      const user = await this.$axios.$put('http://localhost:3000/api/board', modify).catch(err => console.log(err))
+      console.log(user)
+      console.log('this.count')
+      console.log(this.count)
       const { board, turn, direction } = this
       let turnOverCandidate = []
       const turnOverTerget = []
