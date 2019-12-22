@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import localforage from 'localforage'
 
 export default {
   data () {
@@ -27,13 +27,27 @@ export default {
   },
   async asyncData ({ app, $axios }) {
     console.log({ app })
+    // let token = null
+    // console.log({ token })
+    // console.log('setItem')
+    // const aaa = await localforage.setItem('token', 'some value')
+    // console.log({ aaa })
+    // if (aaa) {
+    //   console.log('getItem')
+    //   token = await localforage.getItem('token')
+    // }
+    // console.log({ token })
+    // if (token) {
     const auth = await $axios.$get('http://localhost:3000/api/auth')
     const board = await $axios.$get('http://localhost:3000/api/board')
     console.log({ auth }, { board })
     return { auth, board }
+    // }
   },
   conputed: {
-    ...mapState(['count'])
+  },
+  created () {
+    setInterval(this.getBoard, 1000)
   },
   mounted () {
     if (this.auth.response != null) {
@@ -49,6 +63,10 @@ export default {
       const res = await this.$axios.$put('http://localhost:3000/api/board', modify).catch(err => console.log(err))
       console.log('res.board:', res.board)
       this.board = res.board
+    },
+    async getBoard () {
+      const board = await this.$axios.$get('http://localhost:3000/api/board')
+      this.board = board
     }
   }
 }
