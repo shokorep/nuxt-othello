@@ -64,12 +64,12 @@ function turnoutStone(x, y, turn) {
         state = oppositeTurn
         board = turnoutBoard
     }
-    console.log({x},{y})
+    // console.log({x},{y})
 }
 
 
 api.get('/', (req, res) => {
-    res.json(board)
+    res.json({board, 'state':state})
 })
 
 api.put('/', (req, res, next) => {
@@ -93,6 +93,7 @@ api.put('/', (req, res, next) => {
 
     const param = {
         "result": "Hello!",
+        state,
         board
     };
 
