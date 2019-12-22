@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-var bodyParser = require('body-parser');
 // var jwt = require('jsonwebtoken');
 
 
@@ -17,13 +16,6 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true }))
                                                                             
 app.use('/auth', require('./models/auth'));
-// app.get('/board', board);
-// app.put('/board', board);
 app.use('/board', require('./models/board'))
 
 module.exports = app;
-// module.exports = apiRoutes;
-// {
-//     path: "/api",
-//     handler: app
-// };

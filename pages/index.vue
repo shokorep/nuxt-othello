@@ -36,7 +36,12 @@ export default {
     ...mapState(['count'])
   },
   mounted () {
-    this.turn = this.auth.response.turn
+    if (this.auth.response != null) {
+      console.log('aaaaaagdklkala')
+      this.turn = this.auth.response.turn
+    } else {
+      throw new Error('aaaa')
+    }
   },
   methods: {
     async onClickCell (x, y) {

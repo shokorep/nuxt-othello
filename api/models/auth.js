@@ -21,7 +21,6 @@ api.get('/', function (req, res) {
         }
     }
     res.json({ response, users });
-    // res.json(response);
 })
 
 module.exports = api
