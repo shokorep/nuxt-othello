@@ -1,71 +1,68 @@
 <template>
-  <div class="board">
-    <template v-for="y in board.length">
-      <div
-        v-for="x in board[y - 1].length"
-        :key="`${x} - ${y}`"
-        class="cell"
-        @click="onClickCell(x - 1, y - 1)"
-      >
+  <div >
+    <p>あなたは{{ turn === 1 ? '黒' : '白'}}です</p>
+    <p>{{ state === 1 ? '黒' : '白' }}のターンです</p>
+    <div class="board">
+      <template v-for="y in board.length">
         <div
-          v-if="board[y - 1][x - 1]"
-          :class="['stone', board[y - 1][x - 1] === 1 ? 'black' : 'white']"
-        />
-      </div>
-    </template>
+          v-for="x in board[y - 1].length"
+          :key="`${x} - ${y}`"
+          class="cell"
+          @click="onClickCell(x - 1, y - 1)"
+        >
+          <div
+            v-if="board[y - 1][x - 1]"
+            :class="['stone', board[y - 1][x - 1] === 1 ? 'black' : 'white']"
+          />
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
+
 export default {
   data () {
     return {
-      board: [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, -1, 0, 0, 0],
-        [0, 0, 0, -1, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ],
-      turn: 1,
-      direction: [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
+      turn: ''
+    }
+  },
+  async asyncData ({ app, $axios }) {
+    // console.log({ app })
+    const auth = await $axios.$get('http://localhost:3000/api/auth')
+    const res = await $axios.$get('http://localhost:3000/api/board')
+    const board = res.board
+    const state = res.state
+    // console.log({ auth }, { board })
+    return { auth, board, state }
+  },
+  conputed: {
+  },
+  created () {
+    setInterval(this.getBoard, 1000)
+  },
+  mounted () {
+    if (this.auth.response != null) {
+      console.log('aaaaaagdklkala')
+      this.turn = this.auth.response.turn
+    } else {
+      throw new Error('aaaa')
     }
   },
   methods: {
-    onClickCell (x, y) {
-      this.board = JSON.parse(JSON.stringify(this.board))
-      const { board, turn, direction } = this
-      let turnOverCandidate = []
-      const turnOverTerget = []
-      const oppositeTurn = turn * (-1)
-      direction.forEach(function (dir) {
-        for (let i = 1; i <= 8; i++) {
-          const trgx = (dir[1] * i) + x
-          const trgy = (dir[0] * i) + y
-          if (board[trgy] && board[trgy][trgx] && board[trgy][trgx] === oppositeTurn) {
-            turnOverCandidate.push([trgy, trgx])
-          } else if (board[trgy] && board[trgy][trgx] && turnOverCandidate.length >= 1 && board[trgy][trgx] === turn) {
-            turnOverTerget.push(turnOverCandidate)
-            turnOverCandidate = []
-            break
-          } else if (board[trgy] && (board[trgy][trgx] === 0 || board[trgy][trgx] === turn)) {
-            turnOverCandidate = []
-            break
-          }
-        }
-      })
-      if (turnOverTerget.length >= 1) {
-        board[y][x] = turn
-        turnOverTerget.forEach(function (c) {
-          c.forEach(function (t) {
-            board[t[0]][t[1]] = turn
-          })
-        })
-        this.turn = oppositeTurn
-      }
+    async onClickCell (x, y) {
+      const modify = { x, y, turn: this.turn }
+      const res = await this.$axios.$put('http://localhost:3000/api/board', modify).catch(err => console.log(err))
+      // console.log('res.board:', res.board)
+      this.board = res.board
+    },
+    async getBoard () {
+      const res = await this.$axios.$get('http://localhost:3000/api/board')
+      // console.log('getBoard', res.board)
+      // console.log('getState', res.state)
+      this.board = res.board
+      this.state = res.state
     }
   }
 }

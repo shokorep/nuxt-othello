@@ -58,5 +58,12 @@ export default {
     */
     extend (config, ctx) {
     }
-  }
+  },
+  serverMiddleware: [
+    { path: '/api', handler: '~/api/index.js' }
+    // '~/api/index.js'
+  ],
+  watch: [
+    '~/api'
+  ]
 }
