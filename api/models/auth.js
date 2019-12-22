@@ -9,27 +9,19 @@ const users = [
         playername: 'playler2', token: null, turn: -1, exist: false
     }
 ]
-let response = null
-for (let i = 0; i < users.length; i++) {
-    if(!users[i].exist) {
-        users[i].token = Math.random().toString(36).slice(-8)
-        users[i].exist = true
-        response = users[i]
-    }
-    break
-}
 
 api.get('/', function (req, res) {
-    res.json(response);
+    let response = null
+    for (let i = 0; i < users.length; i++) {
+        if(!users[i].exist) {
+            users[i].token = Math.random().toString(36).slice(-8)
+            users[i].exist = true
+            response = users[i]
+            break
+        }
+    }
+    res.json({ response, users });
+    // res.json(response);
 })
 
 module.exports = api
-
-// module.exports = {
-//     get: function (req, res) {
-//         res.json(resonse);
-//     },
-//     post: (req, res) => {
-
-//     }    
-// }
