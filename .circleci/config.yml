@@ -52,19 +52,19 @@ jobs:
           command: npm run lint -s
 
   workflows:
-  commit:
-    jobs:
-      # Phase 1: Setup
-      - setup
+    commit:
+      jobs:
+        # Phase 1: Setup
+        - setup
 
-      # Phase 2: Lint + Build
-      - lint:
-          requires:
-            - setup
-      - build:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - setup
+        # Phase 2: Lint + Build
+        - lint:
+            requires:
+              - setup
+        - build:
+            requires:
+              - setup
+            filters:
+              branches:
+                only:
+                  - master
