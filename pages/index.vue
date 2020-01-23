@@ -1,14 +1,14 @@
 <template>
-  <div >
-    <p>あなたは{{ turn === 1 ? '黒' : '白'}}です</p>
+  <div>
+    <p>あなたは{{ turn === 1 ? '黒' : '白' }}です</p>
     <p>{{ state === 1 ? '黒' : '白' }}のターンです</p>
     <div class="board">
       <template v-for="y in board.length">
         <div
           v-for="x in board[y - 1].length"
           :key="`${x} - ${y}`"
-          class="cell"
           @click="onClickCell(x - 1, y - 1)"
+          class="cell"
         >
           <div
             v-if="board[y - 1][x - 1]"
@@ -29,12 +29,10 @@ export default {
     }
   },
   async asyncData ({ app, $axios }) {
-    // console.log({ app })
     const auth = await $axios.$get('http://localhost:3000/api/auth')
     const res = await $axios.$get('http://localhost:3000/api/board')
     const board = res.board
     const state = res.state
-    // console.log({ auth }, { board })
     return { auth, board, state }
   },
   conputed: {
@@ -44,7 +42,6 @@ export default {
   },
   mounted () {
     if (this.auth.response != null) {
-      console.log('aaaaaagdklkala')
       this.turn = this.auth.response.turn
     } else {
       throw new Error('aaaa')
@@ -53,14 +50,11 @@ export default {
   methods: {
     async onClickCell (x, y) {
       const modify = { x, y, turn: this.turn }
-      const res = await this.$axios.$put('http://localhost:3000/api/board', modify).catch(err => console.log(err))
-      // console.log('res.board:', res.board)
+      const res = await this.$axios.$put('http://localhost:3000/api/board', modify).catch(err => console.error(err))
       this.board = res.board
     },
     async getBoard () {
       const res = await this.$axios.$get('http://localhost:3000/api/board')
-      // console.log('getBoard', res.board)
-      // console.log('getState', res.state)
       this.board = res.board
       this.state = res.state
     }

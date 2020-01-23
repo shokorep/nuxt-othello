@@ -3,6 +3,7 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+
 jobs:
   build:
     docker:
@@ -18,7 +19,6 @@ jobs:
 
     steps:
       - checkout
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -36,4 +36,35 @@ jobs:
       # run tests!
       # ↓一旦 Pending
       # - run: yarn test
+  setup:
+    executor:
+      name: default
+    steps:
+      - checkout
 
+  lint:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - run:
+          name: Run lint
+          command: npm run lint -s
+
+  workflows:
+  commit:
+    jobs:
+      # Phase 1: Setup
+      - setup
+
+      # Phase 2: Lint + Build
+      - lint:
+          requires:
+            - setup
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - setup
