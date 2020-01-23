@@ -1,14 +1,11 @@
 <template>
   <div>
-    <!-- <div v-if='error.statusCode === 2000'> -->
     他のユーザーがプレイ中です。しばらくお待ちください。
-    <!-- </div> -->
   </div>
 </template>
 
 <script>
 export default {
-  // data () {},
   component: {
   }
 }

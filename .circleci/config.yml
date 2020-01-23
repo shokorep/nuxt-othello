@@ -1,70 +1,75 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
 
-jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:7.10
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
+executors:
+  default:
     working_directory: ~/repo
+    docker:
+      - image: circleci/node:10.16.0
 
+commands:
+  ##
+  # Cache management
+  ##
+  restore_packages:
     steps:
-      - checkout
-      # Download and cache dependencies
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: npm install
-
+          name: Restore npm dependencies
+          key: yarn-v1-{{ checksum "yarn.lock" }}
+  save_packages:
+    steps:
+      - run:
+          name: Install npm dependencies
+          command: yarn --frozen-lockfile --non-interactive
       - save_cache:
+          name: Cache npm dependencies
+          key: yarn-v1-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+            - node_modules
+  persist_data:
+    steps:
+      - persist_to_workspace:
+          root: .
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+  attach_data:
+    steps:
+      - attach_workspace:
+          at: .
 
-      # run tests!
-      # ↓一旦 Pending
-      # - run: yarn test
+jobs:
+  ##
+  # Commit workflow phase 1: Setup
+  ##
   setup:
     executor:
       name: default
     steps:
       - checkout
+      - restore_packages
+      - save_packages
+      - persist_data
 
+  ##
+  # Commit workflow phase 2: Lint + Test
+  ##
   lint:
     executor:
       name: default
     steps:
       - checkout
+      - attach_data
       - run:
           name: Run lint
-          command: npm run lint -s
+          command: yarn lint -s
 
-  workflows:
-    commit:
-      jobs:
-        # Phase 1: Setup
-        - setup
+workflows:
+  commit:
+    jobs:
+      # Phase 1: Setup
+      - setup
 
-        # Phase 2: Lint + Build
-        - lint:
-            requires:
-              - setup
-        - build:
-            requires:
-              - setup
-            filters:
-              branches:
-                only:
-                  - master
+      # Phase 2: Lint
+      - lint:
+          requires:
+            - setup
