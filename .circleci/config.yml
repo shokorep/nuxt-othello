@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 executors:
   default:
@@ -61,7 +61,7 @@ jobs:
       - attach_data
       - run:
           name: Run lint
-          command: yarn lint -s
+          command: yarn lint
 
 workflows:
   commit:
