@@ -1,10 +1,10 @@
-version: 2
+version: 2.1
 
 executors:
   default:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:10.16.0
 
 commands:
   ##
@@ -61,7 +61,20 @@ jobs:
       - attach_data
       - run:
           name: Run lint
-          command: yarn lint -s
+          command: yarn lint
+
+  ##
+  # Weekly workflow: Audit
+  ##
+  audit:
+    executor:
+      name: default
+    steps:
+      - checkout
+      - restore_packages
+      - run:
+          name: Run a security audit
+          command: yarn audit
 
 workflows:
   commit:
@@ -69,7 +82,11 @@ workflows:
       # Phase 1: Setup
       - setup
 
-      # Phase 2: Lint
+      # Phase 2: Lint + audit
       - lint:
+          requires:
+            - setup
+
+      - audit:
           requires:
             - setup
