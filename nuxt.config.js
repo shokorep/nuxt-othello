@@ -48,6 +48,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    baseURL: process.env.baseUrl || 'http://localhost:3000'
   },
   /*
   ** Build configuration

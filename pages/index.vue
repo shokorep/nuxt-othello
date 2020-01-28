@@ -29,8 +29,8 @@ export default {
     }
   },
   async asyncData ({ app, $axios }) {
-    const auth = await $axios.$get('http://localhost:3000/api/auth')
-    const res = await $axios.$get('http://localhost:3000/api/board')
+    const auth = await $axios.$get('/api/auth')
+    const res = await $axios.$get('/api/board')
     const board = res.board
     const state = res.state
     return { auth, board, state }
@@ -50,11 +50,11 @@ export default {
   methods: {
     async onClickCell (x, y) {
       const modify = { x, y, turn: this.turn }
-      const res = await this.$axios.$put('http://localhost:3000/api/board', modify).catch(err => console.error(err))
+      const res = await this.$axios.$put('/api/board', modify).catch(err => console.error(err))
       this.board = res.board
     },
     async getBoard () {
-      const res = await this.$axios.$get('http://localhost:3000/api/board')
+      const res = await this.$axios.$get('/api/board')
       this.board = res.board
       this.state = res.state
     }
